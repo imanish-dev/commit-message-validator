@@ -17,13 +17,16 @@ jobs:
         run: |
           echo "🔍 Checking commit messages for Conventional Commits format..."
 
-          # Determine commit range or single commit
-          if [ -z "${{ github.event.before }}" ] || [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
-            # First commit or empty before, just check the latest commit
-            commits="${{ github.sha }}"
+          before="${{ github.event.before }}"
+          after="${{ github.sha }}"
+
+          # Check if 'before' exists in history
+          if [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "$before^{commit}" 2>/dev/null; then
+            # 'before' does not exist, just check the latest commit
+            commits="$after"
           else
             # Normal case: check all commits in the range
-            commits=$(git log --format="%H" ${{ github.event.before }}..${{ github.sha }})
+            commits=$(git log --format="%H" $before..$after)
           fi
 
           failed=0
