@@ -1,0 +1,41 @@
+name: Enforce Conventional Commit Messages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  check-commit-messages:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Check commit messages
+        run: |
+          echo "🔍 Checking commit messages for Conventional Commits format..."
+
+          commits=$(git log --format="%H" ${{ github.event.before }}..${{ github.sha }})
+
+          failed=0
+
+          for sha in $commits; do
+            message=$(git log -1 --pretty=%B $sha | head -n1)
+
+            if [[ ! "$message" =~ ^(feat|fix|chore|docs|style|refactor|test|perf)(\(.+\))?:\ .+ ]]; then
+              echo "❌ Commit $sha message is invalid: \"$message\""
+              failed=1
+            else
+              echo "✅ Commit $sha message is valid: \"$message\""
+            fi
+          done
+
+          if [[ $failed -eq 1 ]]; then
+            echo "::error::One or more commits have invalid messages."
+            exit 1
+          fi
+
+          echo "✅ All commit messages are valid."
+
