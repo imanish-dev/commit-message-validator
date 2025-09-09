@@ -26,5 +26,3 @@ Where:
 - `perf: improve query performance`
 
 Commits that do not match this pattern will fail the workflow check.
-# commit-message-validator
-GitHub Action to enforce conventional commits
