@@ -17,7 +17,14 @@ jobs:
         run: |
           echo "🔍 Checking commit messages for Conventional Commits format..."
 
-          commits=$(git log --format="%H" ${{ github.event.before }}..${{ github.sha }})
+          # Determine commit range or single commit
+          if [ -z "${{ github.event.before }}" ] || [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+            # First commit or empty before, just check the latest commit
+            commits="${{ github.sha }}"
+          else
+            # Normal case: check all commits in the range
+            commits=$(git log --format="%H" ${{ github.event.before }}..${{ github.sha }})
+          fi
 
           failed=0
 
