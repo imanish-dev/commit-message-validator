@@ -8,6 +8,7 @@ Valid commit messages must follow this format:
 
 ```
 <type>(<optional-scope>): <description>
+
 ```
 
 Where:
